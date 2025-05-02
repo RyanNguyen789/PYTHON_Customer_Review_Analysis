@@ -1,0 +1,37 @@
+#Specify independent variable (x=reviewText_length) and dependent variables (y=helpfulVotes) from data
+x=df[['reviewText_length']].to_numpy()
+y=df[['helpfulVotes']].to_numpy()
+
+#plot the raw data x=reviewText_length, y=helpfulVotes
+plt.figure()
+ax = plt.axes()
+ax.set_xlabel('reviewText_length')
+ax.set_ylabel('helpfulVotes')
+ax.scatter(x, y) 
+
+
+
+
+#Create and fit a linear regression model
+model = LinearRegression()
+model.fit(x, y)
+
+
+#check results
+model.intercept_
+model.coef_
+
+
+#check R-squared
+model.score(x, y)
+
+
+#Use the fitted model to predict estimated helfulVotes
+y_est = model.predict(x)
+
+#Plot the estimated line along with scattered raw data on figure
+ax=plt.axes()
+ax.set_xlabel('reviewText_length')
+ax.set_ylabel('helpfulVotes')
+ax.scatter(x, y)
+ax.plot(x,y_est)
