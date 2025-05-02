@@ -1,0 +1,122 @@
+#Step 1: Get the webpage (using webdrive)
+driver = webdriver.Chrome() # you need to download Chrome webdriver and save it in PATH variable.
+URL_pattern="https://www.tripadvisor.com/Hotel_Review-g28970-d84058-Reviews-or70-The_Dupont_Circle-Washington_DC_District_of_Columbia.html#REVIEWS"
+conn = sqlite3.connect('reviews.db')
+c = conn.cursor()
+# Step 2: set initial variables
+page_URL=URL_pattern 
+driver.get(page_URL)
+# of pages to scrape
+pages_to_scrape = 300
+
+
+# Workload - loops through pages to scrape for selected review, saves reviews via regex and parses each variable
+
+for i in range(0, pages_to_scrape):
+    #sleep to give page time to load
+    time.sleep(5)
+
+# Click the "expand review" link to reveal the entire review.
+    driver.find_element(By.XPATH,".//div[contains(@data-test-target, 'expand-review')]").click()
+
+    time.sleep(5)
+
+    #saves page content after page loads and reviews expanded
+    page_content =driver.page_source
+
+    #regex for reviews
+    regex= "(<div class=[\"]WAllg _T[\"] data-reviewid=.*?<\/span> helpful votes<\/span><\/span><\/div><\/div><\/div>)"
+
+    all_review=re.compile(regex,re.S|re.I).findall(page_content)  
+    
+    #parsing attributes
+    for review in all_review:
+    
+        #initialization
+        reviewID=""          
+        reviewerLocation=""
+        contributions=""
+        helpfulVotes=""
+        overallRating=""
+        reviewTitle=""
+        reviewText=""
+        dateOfStay=""
+        tripType=""
+    
+        
+    
+        #parsing reviewID
+        matches=re.compile("<div class=[\"]WAllg _T[\"] data-reviewid=[\"](.*?)[\"]><div class=[\"].*?[\"]>.*?<\/span> helpful votes<\/span><\/span><\/div><\/div><\/div>",re.S|re.I).findall(review)  
+        if(len(matches)>0):
+            reviewID=matches[0]
+            #print(reviewID)
+
+        #parsing overall rating
+        matches=re.compile("<div class=\"WAllg _T\" data-reviewid=.*?><div class=\"IkECb f O\"><div class=\"Hlmiy F1\" data-test-target=\"review-rating\"><span class=\"ui_bubble_rating bubble_(.*?)\"><\/span><\/div><\/div><div class=.*?<\/span><\/span><\/div><\/div><\/div>",re.S|re.I).findall(review)  
+        if(len(matches)>0):
+            overallRating=matches[0]            
+            #print(overallRating)
+            
+        #parsing review title
+        matches=re.compile(".*?class=\"Qwuub\"><span><span>(.*?)<\/span><\/span><\/a><\/div><div class=\"vTVDc\">.*?",re.S|re.I).findall(review)  
+        if(len(matches)>0):
+            reviewTitle=matches[0]   
+            #print(reviewTitle)
+            
+        #parsing review
+        matches=re.compile(".*?class=\"QewHA H4 _a\"><span>(.*?)<\/span><\/q><\/div><div class=\"lszDU\">*?",re.S|re.I).findall(review)  
+        if(len(matches)>0):
+            reviewText=matches[0]
+            #print(reviewText)
+            
+        #parsing date of stay
+        matches=re.compile(".*?<span class=[\"]usajM[\"]>Date of stay:<\/span>(.*?)<\/span><span class=[\"].*?[\"]><span class=\"trip_type_label[\"].*?",re.S|re.I).findall(review)  
+        if(len(matches)>0):
+            dateOfStay=matches[0]
+            #print(dateOfStay)
+            
+        #parsing trip type
+        matches=re.compile(".*?<span class=[\"]trip_type_label[\"]>Trip type: <\/span>(.*?)<\/span>.*?",re.S|re.I).findall(review)  
+        if(len(matches)>0):
+            tripType=matches[0]
+            #print(tripType)
+            
+        #parsing reviewerLocation
+        matches=re.compile(".*?class=[\"]ui_icon map-pin-fill fXexN[\"]><\/span>(.*?)<\/span><\/span><span class.*?",re.S|re.I).findall(review)  
+        if(len(matches)>0):
+            reviewerLocation=matches[0] 
+            #print(reviewerLocation)
+            
+        #parsing contributions
+        matches=re.compile("class=[\"]phMBo[\"]><span><span class=[\"]yRNgz[\"]>(.*?)<\/span> contribution.*?<\/span>",re.S|re.I).findall(review)  
+        if(len(matches)>0):
+            contributions=matches[0]
+            #print(contributions)
+"class=[\"]phMBo[\"]><span><span class=[\"]yRNgz[\"]>(.?)<\/span> contribution.*?<\/span>"
+        #parsing helpful votes
+        matches=re.compile("contributions<\/span><\/span><span class=[\"]phMBo[\"]><span><span class=[\"]yRNgz[\"]>(.*?)<\/span> helpful vote.*?<\/span>" ,re.S|re.I).findall(review)  
+        if(len(matches)>0):
+            helpfulVotes=matches[0]
+            #print(helpfulVotes)
+            
+        ## printing collected data to screen
+        #print(reviewID +":"+ reviewerLocation +":"+ contributions +":"+ helpfulVotes +":"+ overallRating +":"+ reviewTitle + ":" + reviewText +\
+       #       ":"+ dateOfStay + ":" + tripType) 
+        #Save the extracted data into the database
+        query = "INSERT INTO reviews VALUES (?, ?, ?, ?, ?, ?, ?,?,?)"
+        conn.execute(query, (reviewID, reviewerLocation, contributions, helpfulVotes, overallRating, reviewTitle, reviewText,\
+                          dateOfStay,tripType))
+
+    #close connections
+    conn.commit()
+      
+
+    # When all the reviews in the container have been processed, change the page and repeat
+    driver.find_element(By.XPATH,'.//a[@class="ui_button nav next primary "]').click()
+
+# When all pages have been processed, quit the driver and close DB
+driver.quit()
+conn.close()  
+
+
+#conn.close()  
