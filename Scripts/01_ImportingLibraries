@@ -1,0 +1,12 @@
+'''
+Created on Jan 23, 2023 @author: Ryan Nguyen
+
+'''
+# Import necessary packages
+import re
+import time
+import sqlite3
+import selenium
+from selenium import webdriver
+# import chromedriver_autoinstaller
+from selenium.webdriver.common.by import By
