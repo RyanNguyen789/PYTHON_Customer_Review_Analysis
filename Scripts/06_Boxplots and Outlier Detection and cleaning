@@ -1,0 +1,45 @@
+# Creating for numeric columns to look for outliers
+plt.title("OverallRating Boxplot")
+
+plt.boxplot(data['overallRating'])
+ 
+# show plot
+plt.show()
+
+# Creating for numeric columns to look for outliers
+
+plt.title("Contributions Boxplot")
+plt.boxplot(data['contributions'])
+ 
+# show plot
+plt.show()
+
+# Creating for numeric columns to look for outliers
+plt.title("Reviews Length Boxplot")
+plt.boxplot(data['reviewsText_length'])
+ 
+# show plot
+plt.show()
+
+
+# Creating for numeric columns to look for outliers
+plt.title("Helpful Votes Boxplot")
+plt.boxplot(data['helpfulVotes'])
+ 
+# show plot
+plt.show()
+
+
+
+
+#remove outliers for helpful votes and review length
+
+cols = ['helpfulVotes', 'reviewText_length'] # one or more
+
+Q1 = df[cols].quantile(0.25)
+Q3 = df[cols].quantile(0.75)
+IQR = Q3 - Q1
+
+df = df[~((df[cols] < (Q1 - 1.5 * IQR)) |(df[cols] > (Q3 + 1.5 * IQR))).any(axis=1)]
+
+df = df.dropna()
