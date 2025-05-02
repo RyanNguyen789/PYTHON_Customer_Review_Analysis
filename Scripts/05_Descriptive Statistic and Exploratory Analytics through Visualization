@@ -1,0 +1,66 @@
+print(df.describe())
+
+
+# Scatter plot with reviewer location against overall rating
+#Perhaps some relationship between how many contributers a person submits and the overall rating
+
+plt.scatter(df['contributions'], df['overallRating'])
+ 
+# Adding Title to the Plot
+plt.title("Scatter Plot")
+ 
+# Setting the X and Y labels
+plt.xlabel('contributions')
+plt.ylabel('overallRating')
+ 
+plt.show()
+
+
+
+# Scatter plot with reviewer location against overall rating
+#Perhaps some relationship between how many contributers a person submits and the overall rating
+
+plt.scatter(df['contributions'], df['overallRating'])
+ 
+# Adding Title to the Plot
+plt.title("Scatter Plot")
+ 
+# Setting the X and Y labels
+plt.xlabel('contributions')
+plt.ylabel('overallRating')
+ 
+plt.show()
+
+
+
+# Bar chart with day against tip
+plt.scatter( df['overallRating'],df['reviewText_length'],)
+ 
+plt.title("Bar Chart")
+ 
+# Setting the X and Y labels
+plt.xlabel('overallRating')
+plt.ylabel('reviewText_length')
+ 
+# Adding the legends
+plt.show()
+
+
+# Bar chart with day against tip
+plt.scatter( df['reviewText_length'],df['contributions'])
+plt.title("Scatter Chart")
+# Setting the X and Y labels
+plt.ylabel('contributions')
+plt.xlabel('reviewText_length')
+# Adding the legends
+plt.show()
+
+
+
+# histogram of overall rating
+plt.hist(df['overallRating'])
+ 
+plt.title("Histogram overallRating")
+ 
+# Adding the legends
+plt.show()
