@@ -1,0 +1,43 @@
+#load all needed packages
+import sqlite3
+import pandas as pd
+import numpy as np
+from sklearn.linear_model import LinearRegression
+import matplotlib.pyplot as plt
+import nltk
+import scipy.stats as stats
+
+
+
+
+## load as a data frame from sqlite database
+
+# Create your connection.
+cnx = sqlite3.connect('reviews.db')
+df = pd.read_sql_query("SELECT * FROM reviews", cnx)
+
+
+
+#  tokenize review text and add column for total words in a review
+
+df['tokenized_reviewText'] = df.apply(lambda row: nltk.word_tokenize(row['reviewText']), axis=1)
+df['reviewText_length'] = df.apply(lambda row: len(row['tokenized_reviewText']), axis=1)
+
+#covert object values to integer where need and drop na
+
+df = df.dropna()
+
+
+print(df)
+
+
+
+#covert object values to integer/float as needed
+
+df['contributions'] = pd.to_numeric(df['contributions']).astype(float)
+df['overallRating'] =pd.to_numeric(df['overallRating']).astype(float)
+df['helpfulVotes'] =pd.to_numeric(df['helpfulVotes']).astype(float,errors='ignore')
+
+df = df[df['helpfulVotes'].apply(lambda x: type(x) in [int, np.int64, float, np.float64])]
+
+print(df.dtypes)
