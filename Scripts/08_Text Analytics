@@ -1,0 +1,65 @@
+#wordcloud
+
+from os import path
+from wordcloud import WordCloud, STOPWORDS
+import matplotlib.pyplot as plt
+
+#read the whole file into a text sring
+text = ' '.join([word for word in df['reviewText']])
+
+#update the STOPWORDS
+stopwords = set(STOPWORDS)
+stopwords.update(["b","AC"])
+
+# Generate a word cloud image
+wc = WordCloud(stopwords=stopwords)
+wc.generate(text)
+
+
+# Display the generated image using matplotlib
+plt.imshow(wc)
+plt.axis("off")
+plt.show()
+
+
+
+
+# word frequency
+
+import nltk
+#nltk.download()
+
+text = ' '.join([word for word in df['reviewText']])
+
+#create a list of all words
+all_words_raw = nltk.word_tokenize(text)
+
+all_words=[]
+
+for x in all_words_raw:
+    all_words.append(x.lower())
+
+
+freq_dic=nltk.FreqDist(all_words)
+print(freq_dic.most_common(1000))
+
+
+
+import nltk
+from nltk.corpus import stopwords
+
+
+#remove punctuations and stopword
+spws    = list(set(stopwords.words('english')))
+punctuations = [',','.',"'",'"','?','!',";",'’',':']
+for token in spws + punctuations:
+    if token in freq_dic: # Why adding this line?
+        freq_dic.pop(token)
+print(freq_dic.most_common(50))
+top50=freq_dic.most_common(50)
+
+
+#print Key Value Pairs
+
+for key,value in top50:
+    print(str(key) + ":" + str(value))
