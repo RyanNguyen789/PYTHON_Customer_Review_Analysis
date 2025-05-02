@@ -1,0 +1,15 @@
+#step pre work create the database  (only need to run once)
+
+#prepare the database for storing results
+conn = sqlite3.connect('reviews.db')
+c = conn.cursor()
+c.execute("CREATE TABLE reviews(\
+              reviewId varchar(20), \
+              reviewerLocation varchar(20), \
+              contributions varchar(10), \
+              helpfulVotes varchar(10), \
+              overallRating varchar(10), \
+              reviewTitle varchar(100),\
+              reviewText varchar(1000),\
+              dateOfStay varchar(20),\
+              tripType varchar(50))")
